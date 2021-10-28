@@ -30,6 +30,6 @@ public class BaseModel {
 
     @Column(name = "updated_at")
     @UpdateTimestamp
-//    @JsonIgnore
+    @JsonIgnore
     private LocalDateTime updatedAt;
 }
