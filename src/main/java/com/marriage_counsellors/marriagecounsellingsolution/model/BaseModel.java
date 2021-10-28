@@ -25,11 +25,11 @@ public class BaseModel {
 
     @Column(name = "created_at")
     @CreationTimestamp
-    @JsonIgnore
+//    @JsonIgnore
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
-    @JsonIgnore
+//    @JsonIgnore
     private LocalDateTime updatedAt;
 }
