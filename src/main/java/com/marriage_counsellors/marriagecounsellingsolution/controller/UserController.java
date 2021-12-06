@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/register")
+@RequestMapping("/registration")
 public class UserController {
 
     private UserService userService;

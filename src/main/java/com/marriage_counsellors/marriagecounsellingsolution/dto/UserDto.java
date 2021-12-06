@@ -1,11 +1,13 @@
 package com.marriage_counsellors.marriagecounsellingsolution.dto;
 
+import com.marriage_counsellors.marriagecounsellingsolution.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,4 +28,6 @@ public class UserDto  implements Serializable {
     private String gender;
 
     private String password;
+
+    List<String> roleList;
 }

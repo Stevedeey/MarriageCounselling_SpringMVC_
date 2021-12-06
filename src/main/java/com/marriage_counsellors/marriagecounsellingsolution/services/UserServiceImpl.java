@@ -1,34 +1,39 @@
 package com.marriage_counsellors.marriagecounsellingsolution.services;
 
 import com.marriage_counsellors.marriagecounsellingsolution.dto.UserDto;
-import com.marriage_counsellors.marriagecounsellingsolution.exception.ResourceNotFoundException;
 import com.marriage_counsellors.marriagecounsellingsolution.model.Role;
 import com.marriage_counsellors.marriagecounsellingsolution.model.User;
+import com.marriage_counsellors.marriagecounsellingsolution.repository.RoleRepository;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.UserRepository;
+import com.marriage_counsellors.marriagecounsellingsolution.utility.RoleAssignment;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 @Service
 public class UserServiceImpl implements UserService {
 
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleAssignment roleAssignment;
+    private final RoleRepository roleRepository;
+
+
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleAssignment roleAssignment, RoleRepository roleRepository) {
         super();
         this.userRepository = userRepository;
+        this.roleAssignment = roleAssignment;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -42,12 +47,16 @@ public class UserServiceImpl implements UserService {
         if(optionalUser.isPresent()){
           userDto.setMessage("User with the email :"+ userDto.getEmail() +" already exist!!!");
         }else {
+
+            List<String> stringList = userDto.getRoleList();
+            List<Role> roleList = roleAssignment.assignRole(stringList,roleRepository);
              user = User.builder()
                     .firstname(userDto.getFirstname())
                     .lastname(userDto.getLastname())
                     .email(userDto.getEmail())
                     .encryptedPassword(userDto.getPassword())
                     .gender(userDto.getGender())
+                     .roles(roleList)
                     .dateOfBirth(userDto.getDate0fBirth()).build();
              saveUser(user);
 
