@@ -64,7 +64,7 @@ public class UserController {
         return "registration";
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView showRegister(HttpServletRequest request, HttpServletResponse response) {
 
         HttpSession session = request.getSession();
@@ -75,11 +75,10 @@ public class UserController {
 
         return mav;
     }
-//    @GetMapping("register")
-//    public String showRegistrationForm(Model model){
-//        model.addAttribute("newUser", new UserDto());
-//        return "registration";
-//    }
 
+    @GetMapping("/login")
+    public String loginUser(Model model){
+        return "login";
+    }
 
 }
