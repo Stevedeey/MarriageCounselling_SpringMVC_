@@ -41,30 +41,33 @@ public class UserServiceImpl implements UserService {
 
         User user = null;
 
-        userDto.setMessage("User successfully registered! ");
 
         Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
         if(optionalUser.isPresent()){
           userDto.setMessage("User with the email :"+ userDto.getEmail() +" already exist!!!");
         }else {
 
-            List<String> stringList = userDto.getRoleList();
+            List<String> stringList = List.of("USER");
             List<Role> roleList = roleAssignment.assignRole(stringList,roleRepository);
              user = User.builder()
                     .firstname(userDto.getFirstname())
                     .lastname(userDto.getLastname())
                     .email(userDto.getEmail())
                     .encryptedPassword(userDto.getPassword())
-                    .gender(userDto.getGender())
+                    .gender("m")
                      .roles(roleList)
-                    .dateOfBirth(userDto.getDate0fBirth()).build();
+                    .dateOfBirth("userDto.getDate0fBirth()").build();
              saveUser(user);
 
         }
 
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         UserDto returnUserDto = modelMapper.map(user, UserDto.class);
+
+        if(user != null) {
+            returnUserDto.setMessage("Successfully Registered");
+        }
 
         return returnUserDto;
     }
@@ -76,7 +79,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
 
         } catch (Exception exception) {
-            logger.error("Something went wrong! %f", exception.getMessage());
+            logger.error("Something went wrong! %f"+ exception.getMessage());
         }
     }
 }

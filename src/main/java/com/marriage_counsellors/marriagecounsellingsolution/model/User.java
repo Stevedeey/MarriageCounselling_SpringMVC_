@@ -17,7 +17,7 @@ public class User extends BaseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
-    @Column(length = 36, nullable = false, updatable = false)
+    @Column(length = 36, updatable = false)
     private Long id;
 
     @Column(nullable = false, length = 50)

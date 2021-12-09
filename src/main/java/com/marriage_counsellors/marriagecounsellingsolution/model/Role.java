@@ -2,10 +2,12 @@ package com.marriage_counsellors.marriagecounsellingsolution.model;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Builder
 @Entity
 @Table(name = "roles")
 @NoArgsConstructor
