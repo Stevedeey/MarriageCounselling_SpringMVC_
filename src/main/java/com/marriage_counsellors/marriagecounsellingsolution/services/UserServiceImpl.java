@@ -1,6 +1,7 @@
 package com.marriage_counsellors.marriagecounsellingsolution.services;
 
 import com.marriage_counsellors.marriagecounsellingsolution.dto.UserDto;
+import com.marriage_counsellors.marriagecounsellingsolution.exception.ErrorMessage;
 import com.marriage_counsellors.marriagecounsellingsolution.model.Role;
 import com.marriage_counsellors.marriagecounsellingsolution.model.User;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.RoleRepository;
@@ -40,48 +41,56 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto registerUser(UserDto userDto) {
 
-        User user = null;
-
-
+        UserDto returnedUser = new UserDto();
         Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
-        if(optionalUser.isPresent()){
-          userDto.setMessage("User with the email :"+ userDto.getEmail() +" already exist!!!");
-          return userDto;
-        }else {
+
+        try {
+            if (optionalUser.isPresent()) {
+                throw new ErrorMessage("The email " + userDto.getEmail() + "already exist!!");
+
+            }
 
             List<String> stringList = new ArrayList<>();
-            List<Role> roleList = roleAssignment.assignRole(stringList,roleRepository);
-             user = User.builder()
+            List<Role> roleList = roleAssignment.assignRole(stringList, roleRepository);
+
+            User user = User.builder()
                     .firstname(userDto.getFirstname())
                     .lastname(userDto.getLastname())
                     .email(userDto.getEmail())
                     .encryptedPassword(userDto.getPassword())
                     .gender("m")
-                     .roles(roleList)
+                    .roles(roleList)
                     .dateOfBirth("userDto.getDate0fBirth()").build();
-             saveUser(user);
-
-        }
-
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        UserDto returnUserDto = modelMapper.map(user, UserDto.class);
-
-        if(user != null) {
-            returnUserDto.setMessage("Successfully Registered");
-        }
-
-        return returnUserDto;
-    }
-
-
-    public void saveUser(User user) {
-
-        try {
             userRepository.save(user);
 
-        } catch (Exception exception) {
-            logger.error("Something went wrong! %f"+ exception.getMessage());
+            ModelMapper modelMapper = new ModelMapper();
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+            returnedUser = modelMapper.map(user, UserDto.class);
+
+            returnedUser.setMessage("Successfully Registered");
+            returnedUser.setStatus(true);
+
+            return returnedUser;
+
+        } catch (Exception e) {
+
+            returnedUser.setMessage("Registration failed!!");
+            returnedUser.setStatus(true);
+
+            return returnedUser;
+
         }
+
     }
+
+
+//    public void saveUser(User user) {
+//
+//        try {
+//            userRepository.save(user);
+//
+//        } catch (Exception exception) {
+//            logger.error("Something went wrong! %f" + exception.getMessage());
+//        }
+//    }
 }

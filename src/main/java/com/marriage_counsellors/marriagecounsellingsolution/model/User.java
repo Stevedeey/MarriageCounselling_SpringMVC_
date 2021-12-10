@@ -16,7 +16,7 @@ import java.util.List;
 public class User extends BaseModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(length = 36, updatable = false)
     private Long id;
 
@@ -29,10 +29,10 @@ public class User extends BaseModel {
     @Column(nullable = false, length = 120, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String encryptedPassword;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String gender;
 
     @Column(name = "date_of_birth")
