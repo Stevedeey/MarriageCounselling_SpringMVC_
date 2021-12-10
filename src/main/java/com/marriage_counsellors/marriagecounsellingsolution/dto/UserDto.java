@@ -17,6 +17,8 @@ public class UserDto  implements Serializable {
 
     private String message;
 
+    private boolean status;
+
     private String firstname;
 
     private String lastname;
@@ -28,7 +30,6 @@ public class UserDto  implements Serializable {
     private String gender;
 
     private String password;
-
 
     private List<String> roles;
 }

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 public class DatabaseSeeding {
@@ -34,7 +36,11 @@ public class DatabaseSeeding {
         Role user = Role.builder()
                 .name(ERole.USER)
                 .build();
-        roleRepository.save(user);
+
+        Optional<Role> role = roleRepository.findByName(ERole.USER);
+        if(role.isEmpty()) {
+            roleRepository.save(user);
+        }
 
     }
 
@@ -43,7 +49,10 @@ public class DatabaseSeeding {
                 .name(ERole.ADMIN)
                 .build();
 
-        roleRepository.save(admin);
+        Optional<Role> role = roleRepository.findByName(ERole.ADMIN);
+        if(role.isEmpty()) {
+            roleRepository.save(admin);
+        }
     }
 
 }
