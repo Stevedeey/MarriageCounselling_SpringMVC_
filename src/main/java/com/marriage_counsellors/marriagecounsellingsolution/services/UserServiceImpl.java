@@ -72,10 +72,10 @@ public class UserServiceImpl implements UserService {
 
             return returnedUser;
 
-        } catch (Exception e) {
+        } catch (ErrorMessage e) {
 
-            returnedUser.setMessage("Registration failed!!");
-            returnedUser.setStatus(true);
+            returnedUser.setMessage("Registration failed!! Error: "+e.getMessage());
+            returnedUser.setStatus(false);
 
             return returnedUser;
 

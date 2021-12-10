@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,31 +37,22 @@ public class AuthController {
 
    @PostMapping("/new-user")
     public String registerUser(HttpServletRequest request,
-                               @ModelAttribute("newUser") UserDto userDto) {
-
-       System.out.println("I entered the rocessing handler!!!");
-       System.out.println("Firstname: "+userDto.getFirstname());
-       System.out.println("Lastname: "+userDto.getLastname());
-       System.out.println("Email: "+userDto.getEmail());
-       System.out.println("assword: "+userDto.getPassword());
-
-
-       UserDto user = null;
+                               @ModelAttribute("newUser") UserDto userDto,
+                               Model model, RedirectAttributes redirectAttributes) {
         HttpSession httpSession = request.getSession();
+        UserDto user = userService.registerUser(userDto);
 
-       try{
-            user = userService.registerUser(userDto);
-       }
-       catch (Exception exception){
-           exception.printStackTrace();
-       }
+        if(user.isStatus()){
+            redirectAttributes.addFlashAttribute("message", user.getMessage());
+            httpSession.setAttribute("message", "Successfully registered!!!");
 
-        if (!user.getMessage().equals("Successfully Registered")) {
-            httpSession.setAttribute("message", "Failed to register or email already exist");
-
+            return "redirect:/";
         }
-        httpSession.setAttribute("message", "Successfully registered!!!");
-        return "redirect:/";
+
+
+        httpSession.setAttribute("message", "Failed to register or email already exist");
+        model.addAttribute("message",user.getMessage());
+        return "registration";
     }
 
    @GetMapping("/")
