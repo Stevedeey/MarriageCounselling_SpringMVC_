@@ -13,13 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/auth")
-public class UserController {
+public class AuthController {
 
     private UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public AuthController(UserService userService) {
         this.userService = userService;
     }
 
@@ -61,10 +60,10 @@ public class UserController {
 
         }
         httpSession.setAttribute("message", "Successfully registered!!!");
-        return "registration";
+        return "redirect:/";
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+   @GetMapping("/")
     public ModelAndView showRegister(HttpServletRequest request, HttpServletResponse response) {
 
         HttpSession session = request.getSession();
@@ -76,9 +75,9 @@ public class UserController {
         return mav;
     }
 
-    @GetMapping("/login")
-    public String loginUser(Model model){
-        return "login";
-    }
+//    @GetMapping("/login")
+//    public String loginUser(Model model){
+//        return "login";
+//    }
 
 }

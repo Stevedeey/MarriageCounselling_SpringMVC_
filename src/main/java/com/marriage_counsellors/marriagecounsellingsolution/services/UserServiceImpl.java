@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +46,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
         if(optionalUser.isPresent()){
           userDto.setMessage("User with the email :"+ userDto.getEmail() +" already exist!!!");
+          return userDto;
         }else {
 
-            List<String> stringList = List.of("USER");
+            List<String> stringList = new ArrayList<>();
             List<Role> roleList = roleAssignment.assignRole(stringList,roleRepository);
              user = User.builder()
                     .firstname(userDto.getFirstname())
