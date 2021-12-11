@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserService {
                     .gender("m")
                     .roles(roleList)
                     .dateOfBirth("userDto.getDate0fBirth()").build();
+
             userRepository.save(user);
 
             ModelMapper modelMapper = new ModelMapper();
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
         } catch (ErrorMessage e) {
 
-            returnedUser.setMessage("Registration failed!! Error: "+e.getMessage());
+            returnedUser.setMessage("User already exist!!: "+e.getMessage());
             returnedUser.setStatus(false);
 
             return returnedUser;
