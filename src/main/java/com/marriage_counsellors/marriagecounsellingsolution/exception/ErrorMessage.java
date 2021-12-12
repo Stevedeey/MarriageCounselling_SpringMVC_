@@ -13,6 +13,7 @@ public class ErrorMessage extends RuntimeException{
 
     public ErrorMessage(String message) {
         super(message);
+        this.message = message;
     }
 
     public ErrorMessage(String message, Throwable cause) {

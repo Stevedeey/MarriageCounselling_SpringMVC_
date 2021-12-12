@@ -68,9 +68,9 @@ public class AuthController {
         return mav;
     }
 
-//    @GetMapping("/login")
-//    public String loginUser(Model model){
-//        return "login";
-//    }
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
 
 }

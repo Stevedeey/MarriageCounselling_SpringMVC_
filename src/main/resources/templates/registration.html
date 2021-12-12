@@ -19,7 +19,7 @@
 </head>
 <body>
 <!-- Create Navigation bar   -->
-<h2 class="alert alert-info text-center" th:text="${message}"></h2>
+
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -46,6 +46,8 @@
                     You've successfully registered
                 </div>
             </div>
+
+            <h2 class="alert alert-info text-center" th:if="${message}" th:text="${message}" ></h2>
             <h1>Registration</h1>
             <form action="" th:action="@{/auth/new-user}"  method="post" th:object = "${newUser}">
                 <div class="form-group">
