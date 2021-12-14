@@ -26,6 +26,8 @@
         class="bgded overlay"
         style="background-image: url('images/landing/backgrounds/bkgrd.jpg')"
 >
+    <h2 class="alert alert-info text-center" style="display: flex; text-align: center" th:text="${message}"></h2>
+
     <!-- ################################################################################################ -->
     <div class="wrapper row0">
         <div id="topbar" class="hoc clear">
@@ -66,9 +68,9 @@
                     <li>
                         <a class="drop" href="#">Account</a>
                         <ul>
-                            <li><a href="#">Register</a></li>
+                            <li><a th:href="@{/auth/register}" >Register</a></li>
 
-                            <li><a href="#">Login</a></li>
+                            <li><a th:href="@{/auth/login}">Login</a></li>
                         </ul>
                     </li>
                     <li><a href="#">Contact Us</a></li>

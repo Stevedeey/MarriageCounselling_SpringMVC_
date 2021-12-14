@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthController {
 
     private UserService userService;
@@ -44,13 +45,13 @@ public class AuthController {
 
         if(user.isStatus()){
             redirectAttributes.addFlashAttribute("message", user.getMessage());
-            httpSession.setAttribute("message", "Successfully registered!!!");
+           // httpSession.setAttribute("message", "Successfully registered!!!");
 
             return "redirect:/";
         }
 
 
-        httpSession.setAttribute("message", "Failed to register or email already exist");
+      //  httpSession.setAttribute("message", "Failed to register or email already exist");
         model.addAttribute("message",user.getMessage());
         return "registration";
     }
@@ -67,9 +68,9 @@ public class AuthController {
         return mav;
     }
 
-//    @GetMapping("/login")
-//    public String loginUser(Model model){
-//        return "login";
-//    }
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
 
 }
