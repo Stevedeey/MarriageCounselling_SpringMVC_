@@ -1,0 +1,112 @@
+body{
+    margin:0; padding:0; background: #333;
+}
+.login-form{
+    position:absolute;
+    top: 50%;
+    left:50%;
+    width: 300px;
+    height: 300px;;
+    background: #fff;
+    transform: translateX(-50%) translateY(-50%);
+    border-radius: 12px;
+    padding:20px;
+    overflow: hidden;  /* to hide overlapping elements*/
+    box-sizing:border-box; /* to prevent the effect of padding on the children box*/
+
+
+}
+.face{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:#828BF4;
+    display: block;
+    left:0;
+    top:0;
+    transition:width 0.2s ease-in-out;
+    z-index: 2;
+
+}
+.login-form:hover .face{
+    width:30px;
+}
+.face>.text
+{
+    font-size: 5rem;
+    font-family: sans-serif;
+    color:#fff;
+    text-align: center;
+    display:block;
+    line-height:300px;
+    transition:all 0.2s ease-in-out;
+}
+.login-form:hover .face>.text
+{
+    font-size: 1rem;
+    transform:rotate(-90deg);
+}
+.login-form form{
+    width:250px;
+    margin:0 auto;
+
+}
+.login-form form .form-group > input
+{
+    width: 98%;height:50px;
+    outline: none;
+    border:0px;
+    font-size:20px;
+    font-family: sans-serif,arial;
+    border-bottom:2px solid #3b5998;
+    color:#3b5998;
+    margin-left: 15px;
+
+}
+.input-btn{
+    width:70px;
+    height: 70px;
+    background: #3b5998;
+    position:absolute;
+    bottom:15px;
+    right:15px;
+    /* outline: none; */
+    border:5px solid transparent;
+    border-radius:50%;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    z-index: 1;
+
+
+}
+.input-btn:after{
+    content: "";
+    position: absolute;
+    width:0;
+    height: 0;
+    border-left:30px solid transparent;
+    border-right:30px solid #fff;
+    border-bottom:30px solid transparent;
+    left:-15px;
+    top:5px;
+    transform: rotate(45deg);
+    transition:all 0.2 ease-in-out;
+
+}
+/*Applying the animation created  in line 93 */
+.input-btn:hover, .input-btn:active{
+    border: 5px solid #3b599b;
+    background:#fff;
+}
+.input-btn:hover:after{
+
+    border-right:30px solid #3b5998;
+}
+
+.new_user{
+    margin-left: 15px;
+    font-family: sans-serif,arial;
+}
+.new_user a{
+    padding: 5px;
+}
