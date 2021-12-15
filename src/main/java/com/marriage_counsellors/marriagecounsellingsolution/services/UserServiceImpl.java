@@ -7,6 +7,7 @@ import com.marriage_counsellors.marriagecounsellingsolution.model.User;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.RoleRepository;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.UserRepository;
 import com.marriage_counsellors.marriagecounsellingsolution.utility.RoleAssignment;
+import groovy.util.logging.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
@@ -22,13 +23,13 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
 
@@ -39,9 +40,9 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private  UserRepository userRepository;
-    private  RoleAssignment roleAssignment;
-    private  RoleRepository roleRepository;
+    private  final UserRepository userRepository;
+    private final RoleAssignment roleAssignment;
+    private final RoleRepository roleRepository;
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
@@ -65,6 +66,7 @@ public class UserServiceImpl implements UserService {
         UserDto returnedUser = new UserDto();
         Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
 
+
         try {
             if (optionalUser.isPresent()) {
                 throw new ErrorMessage("The email " + userDto.getEmail() + "already exist!!");
@@ -84,6 +86,7 @@ public class UserServiceImpl implements UserService {
                     .dateOfBirth("userDto.getDate0fBirth()").build();
 
             userRepository.save(user);
+            logger.info("UserDetails: "+ user);
 
             ModelMapper modelMapper = new ModelMapper();
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
