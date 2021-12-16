@@ -1,11 +1,13 @@
 package com.marriage_counsellors.marriagecounsellingsolution.services;
 
+import com.marriage_counsellors.marriagecounsellingsolution.dto.LoginDto;
 import com.marriage_counsellors.marriagecounsellingsolution.dto.UserDto;
 import com.marriage_counsellors.marriagecounsellingsolution.exception.ErrorMessage;
 import com.marriage_counsellors.marriagecounsellingsolution.model.Role;
 import com.marriage_counsellors.marriagecounsellingsolution.model.User;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.RoleRepository;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.UserRepository;
+import com.marriage_counsellors.marriagecounsellingsolution.response.LoginResponse;
 import com.marriage_counsellors.marriagecounsellingsolution.utility.RoleAssignment;
 import groovy.util.logging.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -14,8 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,9 +47,10 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private  final UserRepository userRepository;
+    private final UserRepository userRepository;
     private final RoleAssignment roleAssignment;
     private final RoleRepository roleRepository;
+    private AuthenticationManager authenticationManager;
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
@@ -57,19 +65,16 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-
-
     @Override
     public UserDto registerUser(UserDto userDto) {
 
         UserDto returnedUser = new UserDto();
-        Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
+        Optional<User> optionalUser = findUserByUsername(userDto.getEmail());
 
 
         try {
             if (optionalUser.isPresent()) {
-                throw new ErrorMessage("The email " + userDto.getEmail() + "already exist!!");
+                throw new ErrorMessage("The email " + userDto.getEmail() + " already exist!!");
 
             }
 
@@ -86,7 +91,7 @@ public class UserServiceImpl implements UserService {
                     .dateOfBirth("userDto.getDate0fBirth()").build();
 
             userRepository.save(user);
-            logger.info("UserDetails: "+ user);
+            logger.info("UserDetails: " + user);
 
             ModelMapper modelMapper = new ModelMapper();
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
@@ -97,9 +102,9 @@ public class UserServiceImpl implements UserService {
 
             return returnedUser;
 
-        } catch (Exception e) {
+        } catch (ErrorMessage e) {
 
-            returnedUser.setMessage("User already exist!! "+e.getMessage());
+            returnedUser.setMessage(e.getMessage());
             returnedUser.setStatus(false);
 
             return returnedUser;
@@ -109,17 +114,55 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public LoginResponse authenticate(LoginDto loginDto) {
+        LoginResponse response = new LoginResponse();
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    loginDto.getEmail(), loginDto.getPassword()
+                            ));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userDetails = loadUserByUsername(loginDto.getEmail());
+            Optional<User> userOptional = findUserByUsername(userDetails.getUsername());
+
+                User user = userOptional.get();
+                response.setStatus(true);
+                response.setUser(user);
+                response.setMessage("User logged in successfully");
+
+
+        } catch (AuthenticationException e) {
+
+            response.setStatus(false);
+            response.setMessage("Login attempt failed ");
+
+        } catch (NullPointerException e) {
+            response.setStatus(false);
+            response.setMessage("User not found ");
+
+        }
+
+        return response;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByEmail(username)
-                .orElseThrow(()-> new UsernameNotFoundException("Invalid Username or password"));
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid Username or password"));
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getEncryptedPassword(), maRolesToAuthorities(user.getRoles()));
     }
 
+    public Optional<User> findUserByUsername(String email) {
+        return userRepository.findByEmail(email);
+    }
 
     //method to map role to authority
     //all the roles the resent user has
-    private List<? extends GrantedAuthority> maRolesToAuthorities(List<Role> roles){
-    return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());   }
+    private List<? extends GrantedAuthority> maRolesToAuthorities(List<Role> roles) {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
+    }
 
 }

@@ -48,7 +48,10 @@
                 </div>
             </div>
 
+
             <h2 class="alert alert-info text-center" th:if="${message}" th:text="${message}" ></h2>
+            <h2 class="alert alert-danger text-center" th:if="${errorMessage}" th:text="${errorMessage}" ></h2>
+
             <h1>Registration</h1>
             <form action="" th:action="@{/auth/new-user}"  method="post" th:object = "${newUser}">
                 <div class="form-group">

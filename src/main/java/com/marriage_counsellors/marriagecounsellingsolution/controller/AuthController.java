@@ -1,8 +1,23 @@
 package com.marriage_counsellors.marriagecounsellingsolution.controller;
 
+import com.marriage_counsellors.marriagecounsellingsolution.dto.LoginDto;
 import com.marriage_counsellors.marriagecounsellingsolution.dto.UserDto;
+import com.marriage_counsellors.marriagecounsellingsolution.response.LoginResponse;
 import com.marriage_counsellors.marriagecounsellingsolution.services.UserService;
+import com.marriage_counsellors.marriagecounsellingsolution.services.UserServiceImpl;
+import groovy.util.logging.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +27,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+
 
     @Autowired
     public AuthController(UserService userService) {
@@ -25,9 +46,7 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public ModelAndView showRegistrationForm(HttpServletRequest request){
-//        HttpSession session =  request.getSession();
-//        session.removeAttribute("message");
+    public ModelAndView showRegistrationForm(HttpServletRequest request) {
 
         UserDto userDto = new UserDto();
         ModelAndView modelAndView = new ModelAndView("registration");
@@ -36,27 +55,24 @@ public class AuthController {
         return modelAndView;
     }
 
-   @PostMapping("/new-user")
+    @PostMapping("/new-user")
     public String registerUser(HttpServletRequest request,
                                @ModelAttribute("newUser") UserDto userDto,
                                Model model, RedirectAttributes redirectAttributes) {
-        HttpSession httpSession = request.getSession();
         UserDto user = userService.registerUser(userDto);
 
-        if(user.isStatus()){
+        if (user.isStatus()) {
             redirectAttributes.addFlashAttribute("message", user.getMessage());
-           // httpSession.setAttribute("message", "Successfully registered!!!");
 
             return "redirect:/";
         }
 
-
-      //  httpSession.setAttribute("message", "Failed to register or email already exist");
-        model.addAttribute("message",user.getMessage());
+        //  httpSession.setAttribute("message", "Failed to register or email already exist");
+        model.addAttribute("errorMessage", user.getMessage());
         return "registration";
     }
 
-   @GetMapping("/")
+    @GetMapping("/")
     public ModelAndView showRegister(HttpServletRequest request, HttpServletResponse response) {
 
         HttpSession session = request.getSession();
@@ -69,8 +85,37 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String login(){
+    public String showLogin(Model model){
+        model.addAttribute("user", new LoginDto());
         return "login";
     }
+
+    @PostMapping("/username")
+    public ModelAndView doLogin( @ModelAttribute LoginDto loginDto,
+                                RedirectAttributes redirectAttributes,
+                                HttpServletRequest request) {
+        LoginDto CHECK = loginDto;
+
+        logger.error("I entered into login user");
+
+
+        ModelAndView modelAndView = new ModelAndView();
+        LoginResponse login = userService.authenticate(loginDto);
+
+        if (login.isStatus()) {
+
+            redirectAttributes.addFlashAttribute("user", login.getUser());
+            redirectAttributes.addFlashAttribute("message", login.getMessage());
+            modelAndView.setViewName("redirect:/home");
+            return modelAndView;
+
+        }
+
+        modelAndView.addObject("message", login.getMessage());
+        modelAndView.setViewName("index");
+
+        return modelAndView;
+    }
+
 
 }
