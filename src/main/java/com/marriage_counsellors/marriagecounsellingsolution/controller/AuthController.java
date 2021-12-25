@@ -67,7 +67,6 @@ public class AuthController {
             return "redirect:/";
         }
 
-        //  httpSession.setAttribute("message", "Failed to register or email already exist");
         model.addAttribute("errorMessage", user.getMessage());
         return "registration";
     }
@@ -90,29 +89,30 @@ public class AuthController {
         return "login";
     }
 
-    @PostMapping("/username")
-    public ModelAndView doLogin( @ModelAttribute LoginDto loginDto,
+    @GetMapping("/show-login")
+    public String handleLogin(){
+        return "/login-user";
+    }
+
+    @PostMapping("/login-user")
+    public ModelAndView doLogin(@ModelAttribute("loginUserObj") LoginDto loginDto,
                                 RedirectAttributes redirectAttributes,
                                 HttpServletRequest request) {
-        LoginDto CHECK = loginDto;
-
-        logger.error("I entered into login user");
-
 
         ModelAndView modelAndView = new ModelAndView();
         LoginResponse login = userService.authenticate(loginDto);
 
         if (login.isStatus()) {
 
-            redirectAttributes.addFlashAttribute("user", login.getUser());
-            redirectAttributes.addFlashAttribute("message", login.getMessage());
-            modelAndView.setViewName("redirect:/home");
+            modelAndView.addObject("user", login.getUser());
+            modelAndView.addObject("message", login.getMessage());
+            modelAndView.setViewName("home");
             return modelAndView;
 
         }
 
-        modelAndView.addObject("message", login.getMessage());
-        modelAndView.setViewName("index");
+        modelAndView.addObject("errMessage", login.getMessage());
+        modelAndView.setViewName("login");
 
         return modelAndView;
     }

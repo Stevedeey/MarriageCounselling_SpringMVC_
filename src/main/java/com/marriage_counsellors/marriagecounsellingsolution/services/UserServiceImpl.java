@@ -8,6 +8,7 @@ import com.marriage_counsellors.marriagecounsellingsolution.model.User;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.RoleRepository;
 import com.marriage_counsellors.marriagecounsellingsolution.repository.UserRepository;
 import com.marriage_counsellors.marriagecounsellingsolution.response.LoginResponse;
+import com.marriage_counsellors.marriagecounsellingsolution.security.UserDetailServiceImpl;
 import com.marriage_counsellors.marriagecounsellingsolution.utility.RoleAssignment;
 import groovy.util.logging.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -52,16 +53,22 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private AuthenticationManager authenticationManager;
     private BCryptPasswordEncoder passwordEncoder;
+    private UserDetailServiceImpl userDetailService;
 
     @Autowired
     public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserServiceImpl(UserRepository userRepository, RoleAssignment roleAssignment, RoleRepository roleRepository) {
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, RoleAssignment roleAssignment,
+                           RoleRepository roleRepository, AuthenticationManager authenticationManager,
+                           UserDetailServiceImpl userDetailService) {
         this.userRepository = userRepository;
         this.roleAssignment = roleAssignment;
         this.roleRepository = roleRepository;
+        this.authenticationManager = authenticationManager;
+        this.userDetailService = userDetailService;
     }
 
 
@@ -78,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
             }
 
-            List<String> stringList = new ArrayList<>();
+            List<String> stringList = List.of("USER");
             List<Role> roleList = roleAssignment.assignRole(stringList, roleRepository);
 
             User user = User.builder()
@@ -124,45 +131,35 @@ public class UserServiceImpl implements UserService {
                             ));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDetails userDetails = loadUserByUsername(loginDto.getEmail());
+             UserDetails userDetails = userDetailService.loadUserByUsername(loginDto.getEmail());
+           // var userDetails = (UserDetails) authentication.getPrincipal();
+
             Optional<User> userOptional = findUserByUsername(userDetails.getUsername());
 
-                User user = userOptional.get();
-                response.setStatus(true);
-                response.setUser(user);
-                response.setMessage("User logged in successfully");
+            User user = userOptional.get();
+            response.setStatus(true);
+            response.setUser(user);
+            response.setMessage("User logged in successfully");
 
 
         } catch (AuthenticationException e) {
 
             response.setStatus(false);
-            response.setMessage("Login attempt failed ");
+            response.setMessage("Login attempt failed  : Username or Password Incorrect");
 
         } catch (NullPointerException e) {
             response.setStatus(false);
-            response.setMessage("User not found ");
+            response.setMessage("No user with this email found!! ");
 
         }
 
         return response;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Invalid Username or password"));
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getEncryptedPassword(), maRolesToAuthorities(user.getRoles()));
-    }
 
     public Optional<User> findUserByUsername(String email) {
         return userRepository.findByEmail(email);
     }
 
-    //method to map role to authority
-    //all the roles the resent user has
-    private List<? extends GrantedAuthority> maRolesToAuthorities(List<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
-    }
 
 }
