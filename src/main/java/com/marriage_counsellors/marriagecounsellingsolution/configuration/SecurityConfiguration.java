@@ -3,6 +3,7 @@ package com.marriage_counsellors.marriagecounsellingsolution.configuration;
 import com.marriage_counsellors.marriagecounsellingsolution.security.UserDetailServiceImpl;
 import com.marriage_counsellors.marriagecounsellingsolution.services.UserService;
 import com.marriage_counsellors.marriagecounsellingsolution.utility.SecurityAuthorizationConstant;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,17 +18,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Repository;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private UserDetailServiceImpl userDetailService;
-
-    @Autowired
-    public void setUserDetailService(UserDetailServiceImpl userDetailService) {
-        this.userDetailService = userDetailService;
-    }
+    private final UserDetailServiceImpl userDetailService;
 
 
     @Bean
