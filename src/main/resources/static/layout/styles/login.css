@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 body{
     margin:0; padding:0; background: #333;
 }
@@ -20,7 +22,7 @@ body{
     position:absolute;
     width:100%;
     height:100%;
-    background:#828BF4;
+    background:#3b5998;
     display: block;
     left:0;
     top:0;
@@ -29,7 +31,7 @@ body{
 
 }
 .login-form:hover .face{
-    width:30px;
+width:30px;
 }
 .face>.text
 {
@@ -68,7 +70,7 @@ body{
     height: 70px;
     background: #3b5998;
     position:absolute;
-    bottom:15px;
+   bottom:15px;
     right:15px;
     /* outline: none; */
     border:5px solid transparent;
@@ -105,8 +107,10 @@ body{
 
 .new_user{
     margin-left: 15px;
-    font-family: sans-serif,arial;
+     font-family: sans-serif,arial;
 }
 .new_user a{
     padding: 5px;
 }
+
+
